@@ -2,13 +2,17 @@ package proxy
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"sync/atomic"
+	"time"
 
 	"code.cloudfoundry.org/loggregator/metricemitter"
 	"code.cloudfoundry.org/loggregator/plumbing"
 
+	"github.com/cloudfoundry/sonde-go/events"
+	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
 )
 
@@ -73,7 +77,33 @@ func (h *FirehoseHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.server.serveWS(w, r, client, h.egressFirehoseMetric)
+	// kchen for perf
+	f := func() ([]byte, error) {
+		data := []byte(`{"origin":"firehose","eventType":"LogMessage","timestamp":0,"deployment":"cf","job":"diego_cell","index":"d3b24497-2ff9-41d0-a687-db8a34fc810d","ip":"192.168.16.24","tags":{"firehose":"data-gen-simulator"},"logMessage":{"message":"","message_type":1,"timestamp":0,"app_id":"566dfcdb-2c68-4a16-b9a0-bf0bc5518e02","source_type":"APP/PROC/WEB","source_instance":"0"}}`)
+		envelope := &events.Envelope{}
+		err := json.Unmarshal(data, envelope)
+		if err != nil {
+			panic(err)
+		}
+
+		msg := []byte(`{"@timestamp":"2017-07-18T22:48:59.763Z","@version":1,"annotation":"PR-34 uuid=1501606313280793319 generate data id=21367","class":"com.proximetry.dsc2.listners.Dsc2SubsystemAmqpListner","file":"Dsc2SubsystemAmqpListner.java","level":"INFO","line_number":"101","logger_name":"com.proximetry.dsc2.listners.Dsc2SubsystemAmqpListner","mdc":{"bundle.id":97,"bundle.name":"com.proximetry.dsc2","bundle.version":"0.0.1.SNAPSHOT"},"message":"blahblah-blah|blahblahblah|dsc2| KeyIdRequest :KeyIdRequest(key:xxxxxxxxxxx, id:-xxxxxxxxxxxxxxxxxxx)","method":"spawnNewSubsystemHandler","source_host":"1ajkpfgpagq","thread_name":"bundle-97-ActorSystem-akka.actor.default-dispatcher-5"}`)
+
+		now := time.Now().Unix()
+		envelope.Timestamp = &now
+		envelope.LogMessage.Message = msg
+		envelope.LogMessage.Timestamp = &now
+
+		data, err = proto.Marshal(envelope)
+		if err != nil {
+			panic(err)
+		}
+
+		for {
+			return data, nil
+		}
+	}
+	_ = client
+	h.server.serveWS(w, r, f, h.egressFirehoseMetric)
 }
 
 func (h *FirehoseHandler) Count() int64 {
