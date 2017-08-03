@@ -1,4 +1,5 @@
 # standalone Loggregator for perf / function testing ## How to build and deploy * go get github.com/chenziliang/loggregator
+* download etcd and run it `./etcd`
 * export GOPATH=$GOPATH/src/github.com/chenziliang/loggregator  # override GOPATH
 * cd $GOPATH && ./scripts/build
 * update loggregator_trafficcontroller.json to refect your env, specifically the key/crt path and hostname (replace `ghost` to your public hostname)
