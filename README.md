@@ -17,7 +17,6 @@
 * export EVENTS=LogMessage
 * export SPLUNK_TOKEN=\<HEC token\>
 * export SPLUNK_HOST=\<HEC endpoint\>
-* export SPLUNK_HOST=\<HEC endpoint\>
 * export SPLUNK_INDEX=main
 * export FLUSH_INTERVAL=30s
 * export FIREHOSE_SUBSCRIPTION_ID=\<your subscription ID\>
