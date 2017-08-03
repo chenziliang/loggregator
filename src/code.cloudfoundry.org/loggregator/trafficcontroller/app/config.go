@@ -58,6 +58,10 @@ type Config struct {
 	MetricEmitterInterval  string
 	MetricEmitterDuration  time.Duration `json:"-"`
 	HealthAddr             string
+
+	AuthorizationEndpoint  string
+	TokenEndpoint          string
+	DopplerLoggingEndpoint string
 }
 
 func ParseConfig(configFile string) (*Config, error) {
@@ -139,6 +143,18 @@ func (c *Config) validate() error {
 
 	if c.UaaClientSecret == "" {
 		return errors.New("missing UAA client secret")
+	}
+
+	if c.AuthorizationEndpoint == "" {
+		return errors.New("missing oauth2 AuthorizationEndpoint")
+	}
+
+	if c.TokenEndpoint == "" {
+		return errors.New("missing oauth2 TokenEndpoint")
+	}
+
+	if c.DopplerLoggingEndpoint == "" {
+		return errors.New("missing DopplerLoggingEndpoint")
 	}
 
 	return nil

@@ -1,0 +1,46 @@
+{
+  "JobName": "loggregator_trafficcontroller_z1",
+  "Index": "8c247856-3b94-4609-a276-cb5edce1fae1",
+  "DeploymentName": "cf-warden",
+  "IP": "127.0.0.1",
+  "EtcdUrls": [
+    "http://127.0.0.1:2379"
+  ],
+  "EtcdMaxConcurrentRequests": 10,
+  "EtcdRequireTLS": false,
+  "DopplerAddrs": [
+  ],
+  "DopplerPort": 8081,
+  "OutgoingDropsondePort": 8081,
+  "GRPC": {
+    "Port": 8082,
+    "KeyFile": "/home/ghost/fixtures/server/server.key",
+    "CertFile": "/home/ghost/fixtures/server/server.crt",
+    "CAFile": "/home/ghost/fixtures/ca/ca.crt"
+  },
+  "CCTLSClientConfig": {
+    "ServerName": "ghost",
+    "KeyFile": "/home/ghost/fixtures/server/server.key",
+    "CertFile": "/home/ghost/fixtures/server/server.crt",
+    "CAFile": "/home/ghost/fixtures/ca/ca.crt"
+  },
+  "SkipCertVerify": true,
+  "ApiHost": "http://ghost:9911",
+  "CipherSuites": [
+    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+  ],
+  "SystemDomain": "ghost",
+  "PPROFPort": 0,
+  "UaaHost": "http://ghost:5678",
+  "UaaClient": "doppler",
+  "UaaClientSecret": "doppler-secret",
+  "MetronConfig": {
+    "UDPAddress": "ghost:3457",
+    "GRPCAddress": "ghost:3458"
+  },
+  "MetricEmitterInterval": "1m",
+  "AuthorizationEndpoint": "http://ghost:9911",
+  "TokenEndpoint": "http://ghost:9911",
+  "DopplerLoggingEndpoint": "ws://ghost:8081"
+}

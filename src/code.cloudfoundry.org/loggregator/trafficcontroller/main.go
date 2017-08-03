@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -57,6 +59,13 @@ func main() {
 		log.Fatalf("Couldn't connect to metric emitter: %s", err)
 	}
 
+	go func() {
+		err := oauth2Mockup(conf)
+		if err != nil {
+			log.Fatalf("Can't run oauth2Mockup: %s", err)
+		}
+	}()
+
 	tc := app.NewTrafficController(
 		conf,
 		*disableAccessControl,
@@ -101,4 +110,40 @@ func ccHTTPClient(conf *app.Config) *http.Client {
 		Timeout:   20 * time.Second,
 		Transport: transport,
 	}
+}
+
+func oauth2Mockup(conf *app.Config) error {
+	// /v2/info
+	info := []byte(`{"name":"","build":"","support":"https://support.pivotal.io","version":0,"description":"","authorization_endpoint":"","token_endpoint":"","min_cli_version":"6.23.0","min_recommended_cli_version":"6.23.0","api_version":"2.82.0","app_ssh_endpoint":"","app_ssh_host_key_fingerprint":"f3:f1:53:6d:dd:a3:94:37:0a:f8:ab:2b:3e:f7:56:27","app_ssh_oauth_client":"ssh-proxy","routing_endpoint":"","doppler_logging_endpoint":"","user":"5404b6b1-d8da-4f94-bcdf-1b78d8fed7eb"}`)
+	var v map[string]interface{}
+	err := json.Unmarshal(info, &v)
+	if err != nil {
+		return err
+	}
+
+	v["authorization_endpoint"] = conf.AuthorizationEndpoint
+	v["token_endpoint"] = conf.TokenEndpoint
+	v["doppler_logging_endpoint"] = conf.DopplerLoggingEndpoint
+
+	info, err = json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	http.HandleFunc("/v2/info", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, string(info))
+	})
+
+	// Authorization code endpoint
+	http.HandleFunc("/oauth/auth", func(w http.ResponseWriter, r *http.Request) {
+	})
+
+	// Access token endpoint
+	http.HandleFunc("/oauth/token", func(w http.ResponseWriter, r *http.Request) {
+		// Should return acccess token back to the user
+		w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+		w.Write([]byte("access_token=mocktoken&scope=user&token_type=bearer"))
+	})
+
+	return http.ListenAndServe(":9911", nil)
 }
