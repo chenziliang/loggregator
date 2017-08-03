@@ -14,15 +14,15 @@
   "OutgoingDropsondePort": 8081,
   "GRPC": {
     "Port": 8082,
-    "KeyFile": "/home/ghost/fixtures/server/server.key",
-    "CertFile": "/home/ghost/fixtures/server/server.crt",
-    "CAFile": "/home/ghost/fixtures/ca/ca.crt"
+    "KeyFile": "config/certs/trafficcontroller.key",
+    "CertFile": "config/certs/trafficcontroller.crt",
+    "CAFile": "config/certs/loggregator_ca.crt"
   },
   "CCTLSClientConfig": {
     "ServerName": "ghost",
-    "KeyFile": "/home/ghost/fixtures/server/server.key",
-    "CertFile": "/home/ghost/fixtures/server/server.crt",
-    "CAFile": "/home/ghost/fixtures/ca/ca.crt"
+    "KeyFile": "config/certs/trafficcontroller.key",
+    "CertFile": "config/certs/trafficcontroller.crt",
+    "CAFile": "config/certs/loggregator_ca.crt"
   },
   "SkipCertVerify": true,
   "ApiHost": "http://ghost:9911",
