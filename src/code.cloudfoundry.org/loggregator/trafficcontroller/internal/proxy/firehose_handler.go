@@ -79,7 +79,7 @@ func (h *FirehoseHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// kchen for perf
 	f := func() ([]byte, error) {
-		data := []byte(`{"origin":"firehose","eventType":"LogMessage","timestamp":0,"deployment":"cf","job":"diego_cell","index":"d3b24497-2ff9-41d0-a687-db8a34fc810d","ip":"192.168.16.24","tags":{"firehose":"data-gen-simulator"},"logMessage":{"message":"","message_type":1,"timestamp":0,"app_id":"566dfcdb-2c68-4a16-b9a0-bf0bc5518e02","source_type":"APP/PROC/WEB","source_instance":"0"}}`)
+		data := []byte(`{"origin":"firehose","eventType":"LogMessage","timestamp":0,"deployment":"cf","job":"diego_cell","index":"d3b24497-2ff9-41d0-a687-db8a34fc810d","ip":"192.168.16.24","tags":{"firehose":"data-gen-simulator"},"logMessage":{"message":"","message_type":1,"timestamp":0,"app_id":"913339ce-e25f-4193-8665-bfaf2d77970a","source_type":"APP/PROC/WEB","source_instance":"0"}}`)
 		envelope := &events.Envelope{}
 		err := json.Unmarshal(data, envelope)
 		if err != nil {
