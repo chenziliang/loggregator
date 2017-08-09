@@ -4,7 +4,7 @@
   "DeploymentName": "cf-warden",
   "IP": "127.0.0.1",
   "EtcdUrls": [
-    "http://127.0.0.1:2379"
+    "http://etcd:2379"
   ],
   "EtcdMaxConcurrentRequests": 10,
   "EtcdRequireTLS": false,
@@ -19,28 +19,29 @@
     "CAFile": "config/certs/loggregator_ca.crt"
   },
   "CCTLSClientConfig": {
-    "ServerName": "ghost",
+    "ServerName": "trafficcontroller",
     "KeyFile": "config/certs/trafficcontroller.key",
     "CertFile": "config/certs/trafficcontroller.crt",
     "CAFile": "config/certs/loggregator_ca.crt"
   },
   "SkipCertVerify": true,
-  "ApiHost": "http://ghost:9911",
+  "ApiHost": "http://trafficcontroller:9911",
   "CipherSuites": [
     "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
     "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
   ],
-  "SystemDomain": "ghost",
+  "SystemDomain": "trafficcontroller",
   "PPROFPort": 0,
-  "UaaHost": "http://ghost:5678",
+  "UaaHost": "http://trafficcontroller:5678",
   "UaaClient": "doppler",
   "UaaClientSecret": "doppler-secret",
   "MetronConfig": {
-    "UDPAddress": "ghost:3457",
-    "GRPCAddress": "ghost:3458"
+    "UDPAddress": "trafficcontroller:3457",
+    "GRPCAddress": "trafficcontroller:3458"
   },
   "MetricEmitterInterval": "1m",
-  "AuthorizationEndpoint": "http://ghost:9911",
-  "TokenEndpoint": "http://ghost:9911",
-  "DopplerLoggingEndpoint": "ws://ghost:8081"
+  "AuthorizationEndpoint": "http://trafficcontroller:9911",
+  "TokenEndpoint": "http://trafficcontroller:9911",
+  "DopplerLoggingEndpoint": "ws://trafficcontroller:8081",
+  "JsonEvent": true
 }
