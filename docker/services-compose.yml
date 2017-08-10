@@ -1,0 +1,15 @@
+etcd:
+  image: kchen/etcd:1.0
+  hostname: etcd
+
+trafficcontroller:
+  image: kchen/trafficcontroller:1.0
+  hostname: trafficcontroller
+  links:
+    - etcd
+
+nozzle:
+  image: kchen/nozzle:1.0
+  hostname: nozzle
+  links:
+    - trafficcontroller
