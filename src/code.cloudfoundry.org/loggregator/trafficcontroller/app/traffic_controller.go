@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -73,7 +74,8 @@ func NewTrafficController(
 }
 
 func (t *TrafficController) Start() {
-	log.Print("Startup: Setting up the loggregator traffic controller")
+	data, _ := json.Marshal(t.conf)
+	log.Printf("Startup: Setting up the loggregator traffic controller, config:\n%s\n", data)
 
 	batcher, err := t.initializeMetrics("LoggregatorTrafficController", t.conf.MetronConfig.UDPAddress)
 	if err != nil {
