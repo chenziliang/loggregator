@@ -145,9 +145,14 @@ func (t *TrafficController) Start() {
 		f = plumbing.NewStaticFinder(t.conf.DopplerAddrs)
 	default:
 		etcdAdapter := t.defaultStoreAdapterProvider(t.conf)
-		err = etcdAdapter.Connect()
-		if err != nil {
-			log.Panicf("Unable to connect to ETCD: %s", err)
+		for {
+			err = etcdAdapter.Connect()
+			if err != nil {
+				log.Printf("Unable to connect to ETCD: %s", err)
+				time.Sleep(time.Second)
+			} else {
+				break
+			}
 		}
 
 		f = dopplerservice.NewFinder(

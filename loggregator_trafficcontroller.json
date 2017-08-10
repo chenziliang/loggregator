@@ -42,6 +42,5 @@
   "MetricEmitterInterval": "1m",
   "AuthorizationEndpoint": "http://trafficcontroller:9911",
   "TokenEndpoint": "http://trafficcontroller:9911",
-  "DopplerLoggingEndpoint": "ws://trafficcontroller:8081",
-  "JsonEvent": true
+  "DopplerLoggingEndpoint": "ws://trafficcontroller:8081"
 }
