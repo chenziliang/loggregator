@@ -9,4 +9,5 @@ ENV GOPATH /go/src/github.com/chenziliang/loggregator
 RUN cd /go/src/github.com/chenziliang/loggregator && ./scripts/build
 WORKDIR /go/src/github.com/chenziliang/loggregator
 EXPOSE 9911
+EXPOSE 8081
 CMD ["./bin/trafficcontroller", "--config", "loggregator_trafficcontroller.json", "--disableAccessControl"]

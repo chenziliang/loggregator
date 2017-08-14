@@ -23,4 +23,4 @@ ENV SPLUNK_INDEX=main
 ENV FLUSH_INTERVAL=30s
 ENV FIREHOSE_SUBSCRIPTION_ID=kchen-spl
 
-CMD ["/bin/sh", "-c", "sleep 10 && ./splunk-firehose-nozzle"]
+CMD ["/bin/sh", "-c", "sleep 60 && ./splunk-firehose-nozzle"]

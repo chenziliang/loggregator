@@ -1,15 +1,28 @@
 etcd:
   image: zlchen/etcd:latest
   hostname: etcd
+  ports:
+    - "2379"
+  restart: always
 
 trafficcontroller:
   image: zlchen/trafficcontroller:latest
   hostname: trafficcontroller
-  links:
+  ports:
+    - "8081"
+    - "9911"
+  depends_on:
     - etcd
+  restart: always
 
 nozzle:
   image: zlchen/nozzle:latest
   hostname: nozzle
-  links:
+  ports:
+    - "9912"
+  environment:
+    - SPLUNK_TOKEN=00000000-0000-0000-0000-000000000000
+    - SPLUNK_HOST=https://so1:8088
+  depends_on:
     - trafficcontroller
+  restart: always
