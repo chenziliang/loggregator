@@ -88,17 +88,18 @@ func (h *FirehoseHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		msg := []byte(`{"@timestamp":"2017-07-18T22:48:59.763Z","@version":1,"annotation":"PR-34 uuid=1501606313280793319 generate data id=21367","class":"com.proximetry.dsc2.listners.Dsc2SubsystemAmqpListner","file":"Dsc2SubsystemAmqpListner.java","level":"INFO","line_number":"101","logger_name":"com.proximetry.dsc2.listners.Dsc2SubsystemAmqpListner","mdc":{"bundle.id":97,"bundle.name":"com.proximetry.dsc2","bundle.version":"0.0.1.SNAPSHOT"},"message":"blahblah-blah|blahblahblah|dsc2| KeyIdRequest :KeyIdRequest(key:xxxxxxxxxxx, id:-xxxxxxxxxxxxxxxxxxx)","method":"spawnNewSubsystemHandler","source_host":"1ajkpfgpagq","thread_name":"bundle-97-ActorSystem-akka.actor.default-dispatcher-5"}`)
 
-		now := time.Now().Unix()
-		envelope.Timestamp = &now
-		envelope.LogMessage.Message = msg
-		envelope.LogMessage.Timestamp = &now
-
-		data, err = proto.Marshal(envelope)
-		if err != nil {
-			panic(err)
-		}
 
 		for {
+			now := time.Now().Unix()
+			envelope.Timestamp = &now
+			envelope.LogMessage.Message = msg
+			envelope.LogMessage.Timestamp = &now
+
+			data, err = proto.Marshal(envelope)
+			if err != nil {
+				continue
+			}
+
 			return data, nil
 		}
 	}
