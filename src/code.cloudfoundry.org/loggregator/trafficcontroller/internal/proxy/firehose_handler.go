@@ -90,7 +90,7 @@ func (h *FirehoseHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 
 		for {
-			now := time.Now().Unix()
+			now := time.Now().UnixNano()
 			envelope.Timestamp = &now
 			envelope.LogMessage.Message = msg
 			envelope.LogMessage.Timestamp = &now
