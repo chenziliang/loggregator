@@ -52,10 +52,16 @@ func main() {
 	}
 
 	validMsgTypes := []string{"s1kbyte", "s256byte", "uns1kbyte", "uns256byte"}
+	valid := false
 	for i := range validMsgTypes {
-		if validMsgTypes[i] != *msgType {
-			log.Panicf("Invalid message type: %s", *msgType)
+		if validMsgTypes[i] == *msgType {
+			valid = true
+			break
 		}
+	}
+
+	if !valid {
+		log.Panicf("Invalid message type: %s", *msgType)
 	}
 
 	conf, err := app.ParseConfig(*configFile)
