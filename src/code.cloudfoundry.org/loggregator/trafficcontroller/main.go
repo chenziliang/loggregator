@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"code.cloudfoundry.org/loggregator/metricemitter"
@@ -45,7 +46,7 @@ func main() {
 
 	flag.Parse()
 
-	d, err := strconv.ParseInt64(*duration)
+	d, err := strconv.ParseInt(*duration, 10, 64)
 	if err != nil {
 		log.Panicf("Invalid duration: %s", *duration)
 	}
@@ -61,7 +62,7 @@ func main() {
 	if err != nil {
 		log.Panicf("Unable to parse config: %s", err)
 	}
-	conf.RunDuration = time.Second * d
+	conf.RunDuration = time.Second * time.Duration(d)
 	conf.MessageTypeToSimulate = *msgType
 
 	credentials, err := plumbing.NewClientCredentials(
