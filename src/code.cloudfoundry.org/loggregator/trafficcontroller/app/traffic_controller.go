@@ -210,6 +210,12 @@ func (t *TrafficController) Start() {
 
 	killChan := make(chan os.Signal)
 	signal.Notify(killChan, os.Interrupt)
+
+	go func() {
+		time.Sleep(conf.RunDuration)
+		killChan <- os.Interrupt
+	}()
+
 	<-killChan
 	log.Print("Shutting down")
 }

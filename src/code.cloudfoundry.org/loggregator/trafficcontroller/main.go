@@ -31,12 +31,38 @@ func main() {
 		"Location of the loggregator trafficcontroller config json file",
 	)
 
+	duration := flag.String(
+		"duration",
+		"1200",
+		"How long to run in seconds",
+	)
+
+	msgType := flag.String(
+		"message-type",
+		"uns256byte",
+		"What kind of message to simulate: s1kbyte, s256byte, uns1kbyte, uns256byte",
+	)
+
 	flag.Parse()
+
+	d, err := strconv.ParseInt64(*duration)
+	if err != nil {
+		log.Panicf("Invalid duration: %s", *duration)
+	}
+
+	validMsgTypes := []string{"s1kbyte", "s256byte", "uns1kbyte", "uns256byte"}
+	for i := range validMsgTypes {
+		if validMsgTypes[i] != *msgType {
+			log.Panicf("Invalid message type: %s", *msgType)
+		}
+	}
 
 	conf, err := app.ParseConfig(*configFile)
 	if err != nil {
 		log.Panicf("Unable to parse config: %s", err)
 	}
+	conf.RunDuration = time.Second * d
+	conf.MessageTypeToSimulate = *msgType
 
 	credentials, err := plumbing.NewClientCredentials(
 		conf.GRPC.CertFile,
