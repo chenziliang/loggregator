@@ -9,6 +9,7 @@
   "EtcdMaxConcurrentRequests": 10,
   "EtcdRequireTLS": false,
   "DopplerAddrs": [
+      "localhost:8888"
   ],
   "DopplerPort": 8081,
   "OutgoingDropsondePort": 8081,
