@@ -52,6 +52,7 @@ type TrafficController struct {
 	metricClient         MetricClient
 	uaaHTTPClient        *http.Client
 	ccHTTPClient         *http.Client
+	killChan             chan os.Signal
 }
 
 // finder provides service discovery of Doppler processes
@@ -73,6 +74,7 @@ func NewTrafficController(
 		metricClient:         metricClient,
 		uaaHTTPClient:        uaaHTTPClient,
 		ccHTTPClient:         ccHTTPClient,
+		killChan:             make(chan os.Signal),
 	}
 }
 
@@ -175,7 +177,8 @@ func (t *TrafficController) Start() {
 	_ = pool
 	// grpcConnector := plumbing.NewGRPCConnector(1000, pool, f, batcher, t.metricClient)
 	grpcConnector := &grpcConnectorPerf{
-		msgType: t.conf.MessageTypeToSimulate,
+		msgType:           t.conf.MessageTypeToSimulate,
+		trafficController: t,
 	}
 
 	dopplerHandler := http.Handler(
@@ -216,15 +219,9 @@ func (t *TrafficController) Start() {
 	p := profiler.New(t.conf.PPROFPort)
 	go p.Start()
 
-	killChan := make(chan os.Signal)
-	signal.Notify(killChan, os.Interrupt)
+	signal.Notify(t.killChan, os.Interrupt)
 
-	go func() {
-		time.Sleep(t.conf.RunDuration)
-		killChan <- os.Interrupt
-	}()
-
-	<-killChan
+	<-t.killChan
 	log.Print("Shutting down")
 }
 
@@ -288,16 +285,26 @@ func (t *TrafficController) defaultStoreAdapterProvider(conf *Config) storeadapt
 	return etcdStoreAdapter
 }
 
+func (t *TrafficController) Shutdown() {
+	t.killChan <- os.Interrupt
+}
+
 // kchen for perf
 type grpcConnectorPerf struct {
-	msgType string
+	msgType           string
+	trafficController *TrafficController
 }
 
 func (g *grpcConnectorPerf) Subscribe(ctx context.Context, req *plumbing.SubscriptionRequest) (func() ([]byte, error), error) {
+	start := time.Now().UnixNano()
 	f := func() ([]byte, error) {
 		envelope := getMessage(g.msgType)
 		for {
 			now := time.Now().UnixNano()
+			if now-start > int64(g.trafficController.conf.RunDuration) {
+				g.trafficController.Shutdown()
+			}
+
 			envelope.Timestamp = &now
 			envelope.LogMessage.Timestamp = &now
 
