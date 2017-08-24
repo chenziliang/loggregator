@@ -44,6 +44,12 @@ func main() {
 		"What kind of message to simulate: s1kbyte, s256byte, uns1kbyte, uns256byte",
 	)
 
+	ip:= flag.String(
+		"ip",
+		"",
+		"Override IP field in the event",
+	)
+
 	flag.Parse()
 
 	d, err := strconv.ParseInt(*duration, 10, 64)
@@ -70,6 +76,7 @@ func main() {
 	}
 	conf.RunDuration = time.Second * time.Duration(d)
 	conf.MessageTypeToSimulate = *msgType
+	conf.IPToOverride = *ip
 
 	credentials, err := plumbing.NewClientCredentials(
 		conf.GRPC.CertFile,

@@ -178,6 +178,7 @@ func (t *TrafficController) Start() {
 	// grpcConnector := plumbing.NewGRPCConnector(1000, pool, f, batcher, t.metricClient)
 	grpcConnector := &grpcConnectorPerf{
 		msgType:           t.conf.MessageTypeToSimulate,
+		ip:                t.conf.IPToOverride,
 		trafficController: t,
 	}
 
@@ -292,13 +293,14 @@ func (t *TrafficController) Shutdown() {
 // kchen for perf
 type grpcConnectorPerf struct {
 	msgType           string
+	ip                string
 	trafficController *TrafficController
 }
 
 func (g *grpcConnectorPerf) Subscribe(ctx context.Context, req *plumbing.SubscriptionRequest) (func() ([]byte, error), error) {
 	start := time.Now().UnixNano()
 	f := func() ([]byte, error) {
-		envelope := getMessage(g.msgType)
+		envelope := getMessage(g.msgType, g.ip)
 		for {
 			now := time.Now().UnixNano()
 			if now-start > int64(g.trafficController.conf.RunDuration) {
@@ -327,7 +329,7 @@ func (g *grpcConnectorPerf) RecentLogs(ctx context.Context, appID string) [][]by
 	return nil
 }
 
-func getMessage(msgType string) *events.Envelope {
+func getMessage(msgType, ip string) *events.Envelope {
 	var msg []byte
 	if msgType == "s1kbyte" {
 		msg = []byte(`{"@timestamp":"2017-07-18T22:48:59.763Z","@version":1,"annotation":"PR-34 uuid=1501606313280793319 generate data id=21367","class":"com.proximetry.dsc2.listners.Dsc2SubsystemAmqpListner","file":"Dsc2SubsystemAmqpListner.java","level":"INFO","line_number":"101","logger_name":"com.proximetry.dsc2.listners.Dsc2SubsystemAmqpListner","mdc":{"bundle.id":97,"bundle.    name":"com.proximetry.dsc2","bundle.version":"0.0.1.SNAPSHOT"},"message":"\"127.0.0.1 - admin [29/Apr/2017:17:53:05.154 -0700] \"GET /zh-CN/ HTTP/1.1\" 303 105 \"http://localhost:8000/zh-CN/account/login?return_to=%2Fzh-CN%2F\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36\" - 5905357127106c6ce50 23ms\"","method":"spawnNewSubsystemHandler","source_host":"1ajkpfgpagq","thread_name":"bundle-97-ActorSystem-akka.actor.default-dispatcher-5","log":"127.0.0.1 - admin [29/Apr/2017:17:53:05.154 -0700] GET /zh-CN/ HTTP/1.1 303 105 http://localhost:8000/zh-CN/account/login?return_to=%2Fzh-CN%2F Mozilla/5.0 (Macintosh; Intel Mac OS X10_12_4) AppleWebKit/537.36 (KHTML, like Gecko)"}`)
@@ -344,6 +346,10 @@ func getMessage(msgType string) *events.Envelope {
 	err := json.Unmarshal(data, envelope)
 	if err != nil {
 		panic(err)
+	}
+
+	if ip != "" {
+		envelope.Ip = &ip
 	}
 
 	envelope.LogMessage.Message = msg

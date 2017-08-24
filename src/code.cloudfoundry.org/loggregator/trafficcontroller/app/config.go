@@ -63,8 +63,9 @@ type Config struct {
 	TokenEndpoint          string
 	DopplerLoggingEndpoint string
 
-	RunDuration           time.Duration `json:"-"`
-	MessageTypeToSimulate string        `json:"-"`
+	RunDuration           time.Duration
+	MessageTypeToSimulate string
+	IPToOverride          string
 }
 
 func ParseConfig(configFile string) (*Config, error) {
